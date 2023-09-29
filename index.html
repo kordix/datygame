@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            font-family: Arial
+        }
+
+        .card {
+            width: 130px;
+            height: 200px;
+            border: 1px black solid;
+            padding: 5px;
+            border-radius: 10px;
+            margin: 5px;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+
+        <!-- <button @click="load">Nowa gra</button> -->
+
+        <div v-if="gamedata.gracze.length > 1">
+            <div v-if="!graczbool">
+                <button @click="yourgracz = 0;graczbool = true;" >GRACZ 0</button>
+                &nbsp;
+                <button @click="yourgracz = 1;graczbool = true" >GRACZ 1</button>
+            </div>
+            <div v-else>
+                JEŚTEŚ GRACZEM {{yourgracz}}. TERAZ GRA {{gamedata.activegracz}}. Skuchy: {{gamedata.skuchy[0]}} {{gamedata.skuchy[1]}}
+            </div>
+
+            <p v-if="gamedata.activegracz != yourgracz && graczbool" style="color:red"><b>TURA DRUGIEGO GRACZA</b></p>
+            <p>Gracz: {{gamedata.activegracz }}</p>
+        </div>
+        <div v-else>
+            Skuchy: {{gamedata.skuchy[0]}}
+        </div>
+
+
+
+
+        <div v-if="gamedata.datystol">
+            <p><b>{{gamedata.activedata.opis}}</b></p>
+
+            <div style="display:flex">
+                <div v-for="(elem,index) in gamedata.datystol" style="display:flex">
+                    <div class="card" @mouseover="elem.hovered = gamedata.activegracz == yourgracz ? true : false" @mouseleave="elem.hovered=false"
+                        @click="layCard(index)">
+                        <p>{{elem.opis}}</p>
+                        <p>{{elem.rok}}</p>
+                    </div>
+                    <div class="card" style="opacity:0.2" v-if="elem.hovered"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <br><br>
+        <br><br>
+        <br><br>
+        <br><br><br><br>
+        <!-- <button @click="save">Zapisz grę</button> -->
+        <p style="color:red" v-if="endgame"><b>KONIEC GRY</b></p>
+        <button @click="load">Załaduj grę</button>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
+
+    <script>
+
+        Vue.createApp({
+            data() {
+                return {
+                    endgame:false,
+                    message:'',
+                    graczbool: true,
+                    yourgracz: 0,
+                    cruddata: null,
+                    gamedata: {
+                        gracze: [{ color: 'red' }],
+                        activegracz: 0,
+                        skuchy: [0, 0],
+                        activeindex: 0,
+                        activedata: {},
+                        datystol: [{ opis: 'początek ziemi nowe', rok: 0 }, { opis: 'odległą przyszłość', rok: 5000 }],
+                        daty: [
+                            { opis: 'polacy pod grunwadlem odkrywaja przepis na bimber od krzyzakow', rok: 1410 },
+                            { opis: 'wpierdol arabom w Wiedniu', rok: 1683 },
+                            { opis: ' august poniatowski za dostep do cipy sprzedaje kraj', rok: 1772 },
+                            { opis: 'Władysław gomulka bohatersko przepedza żydów z Polski', rok: 1968 },
+                            { opis: 'Wojciech Jaruzelski ratuje ojczyzne przed zydokomuną', rok: 1981 },
+                            { opis: 'Bronisław Komorowski pełni obowiazki prezydenta', rok: 2010 },
+                            { opis: 'ułaskawienie bestii z Piotrkowa', rok: 2023 },
+                        ],
+
+
+                    },
+
+                }
+            },
+            async mounted() {
+                let self = this;
+
+
+                this.losuj();
+            },
+            methods: {
+                losuj() {
+                    let dataindex = Math.ceil(Math.random() * this.gamedata.daty.length - 1);
+                    console.log(dataindex);
+                    this.gamedata.activedata = { ...this.gamedata.daty[dataindex] };
+                    this.gamedata.daty.splice(dataindex, 1)
+                },
+                async save() {
+                    axios.post('api/save.php', this.gamedata);
+                },
+                async load() {
+                    let self = this;
+                    await axios.get('api/load.php').then((res) => self.gamedata = res.data);
+                    for (let i = 0; i < this.gamedata.datystol.length; i++) {
+                        this.gamedata.datystol[i].hovered = false;
+                    }
+                },
+                layCard(index) {
+                    if(this.endgame){
+                        return;
+                    }
+                    if (this.gamedata.activegracz == this.yourgracz) {
+                        console.log(index);
+
+                        let date1 = this.gamedata.datystol[index].rok;
+                        let date2 = this.gamedata.datystol[index + 1].rok;
+
+                        if (this.gamedata.activedata.rok > date1 && this.gamedata.activedata.rok < date2) {
+                            this.gamedata.datystol.splice(index + 1, 0, { ...this.gamedata.activedata });
+                            this.losuj();
+                            this.gamedata.activegracz = this.gamedata.gracze.length == this.gamedata.activegracz + 1 ? 0 : this.gamedata.activegracz + 1;
+
+                            console.log(this.activegracz);
+                            this.save();
+
+
+                        } else {
+
+                            this.gamedata.skuchy[this.gamedata.activegracz] += 1;
+
+                            if(this.gamedata.skuchy[this.gamedata.activegracz] > 5 ) {
+                                this.message = 'KONIEC GRY';
+                                this.endgame = true;
+                            } 
+                        }
+                    }
+
+
+
+                }
+            }
+
+        }).mount('#app')
+
+
+    </script>
+</body>
+
+</html>
