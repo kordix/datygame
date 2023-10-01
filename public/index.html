@@ -97,6 +97,7 @@
                     yourgracz: 0,
                     cruddata: null,
                     gamedata: {
+
                         gracze: [{ color: 'red' }, { color: 'blue' } ],
                         activegracz: 0,
                         skuchy: [0, 0],
@@ -178,7 +179,11 @@
                         if (this.gamedata.activedata.rok > date1 && this.gamedata.activedata.rok < date2) {
                             this.gamedata.datystol.splice(index + 1, 0, { ...this.gamedata.activedata });
                             this.losuj();
-                            this.gamedata.activegracz = this.gamedata.gracze.length == this.gamedata.activegracz + 1 ? 0 : this.gamedata.activegracz + 1;
+                            if(this.gamedata.gracze.length ===1){
+
+                            }else {
+                                this.gamedata.activegracz = this.gamedata.gracze.length == this.gamedata.activegracz + 1 ? 0 : this.gamedata.activegracz + 1;
+                            }
 
                             console.log(this.activegracz);
                             this.save();
