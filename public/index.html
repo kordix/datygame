@@ -31,9 +31,11 @@
 
         <div v-if="gamedata.gracze.length > 1">
             <div v-if="!graczbool">
+                <button @click="setsingle" style="margin-right:50px">Single</button>
                 <button @click="yourgracz = 0;graczbool = true;">GRACZ 0</button>
                 &nbsp;
                 <button @click="yourgracz = 1;graczbool = true">GRACZ 1</button>
+
             </div>
             <div v-else>
                 JEŚTEŚ GRACZEM {{yourgracz}}. TERAZ GRA {{gamedata.activegracz}}. Skuchy: {{gamedata.skuchy[0]}}
@@ -53,7 +55,7 @@
         <div v-if="gamedata.datystol">
             <p><b>{{gamedata.activedata.opis}}</b></p>
 
-            <div style="display:flex">
+            <div style="display:flex;flex-wrap:wrap;max-width:800px">
                 <div v-for="(elem,index) in gamedata.datystol" style="display:flex">
                     <div class="card" @mouseover="elem.hovered = gamedata.activegracz == yourgracz ? true : false"
                         @mouseleave="elem.hovered=false" @click="layCard(index)">
@@ -91,11 +93,11 @@
                 return {
                     endgame: false,
                     message: '',
-                    graczbool: true,
+                    graczbool: false,
                     yourgracz: 0,
                     cruddata: null,
                     gamedata: {
-                        gracze: [{ color: 'red' }],
+                        gracze: [{ color: 'red' }, { color: 'blue' } ],
                         activegracz: 0,
                         skuchy: [0, 0],
                         activeindex: 0,
@@ -151,7 +153,19 @@
                         this.gamedata.datystol[i].hovered = false;
                     }
                 },
+                setsingle(){
+                    // console.log('fsafdas');
+                    this.gamedata.gracze.pop();
+                    // this.loademit();
+                },
+                loademit(){
+                  conn.send('load');
+                },
                 layCard(index) {
+                    if(!this.graczbool){
+                        this.setsingle();
+                    }
+
                     if (this.endgame) {
                         return;
                     }
@@ -181,7 +195,9 @@
                         }
                     }
 
-                    conn.send('load');
+                    if(this.gamedata.gracze.length > 1){
+                        conn.send('load');
+                    }
 
 
 
