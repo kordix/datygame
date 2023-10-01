@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-<link rel="icon" href="data:;base64,=">
+    <link rel="icon" href="data:;base64,=">
     <style>
         body {
             font-family: Arial
@@ -18,6 +18,35 @@
             padding: 5px;
             border-radius: 10px;
             margin: 5px;
+
+        }
+
+        .cardpotent {
+              display:flex;
+            width: 25px;
+            margin-top:5px;
+            /* padding:5px; */
+            height: 200px;
+            border: 1px black solid;
+            border-radius: 5px;
+            opacity: 0.2;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .cardpotent:hover {
+            background:green;
+            /* content:'+';
+            display:flex;
+            width: 130px;
+            height: 200px;
+            border: 1px black solid;
+            padding: 5px;
+            border-radius: 10px;
+            margin: 5px;
+            opacity:0.4;
+            justify-content:center;
+            align-items:center; */
 
         }
     </style>
@@ -55,14 +84,15 @@
         <div v-if="gamedata.datystol">
             <p><b>{{gamedata.activedata.opis}}</b></p>
 
-            <div style="display:flex;flex-wrap:wrap;max-width:800px">
+            <div style="display:flex;flex-wrap:wrap;max-width:90%">
                 <div v-for="(elem,index) in gamedata.datystol" style="display:flex">
                     <div class="card" @mouseover="elem.hovered = gamedata.activegracz == yourgracz ? true : false"
-                        @mouseleave="elem.hovered=false" @click="layCard(index)">
+                        @mouseleave="elem.hovered=false" >
                         <p>{{elem.opis}}</p>
                         <p>{{elem.rok}}</p>
                     </div>
-                    <div class="card" style="opacity:0.2" v-if="elem.hovered"></div>
+                    <div class="cardpotent" @click="layCard(index)">+</div>
+                    <!-- <div class="card" style="opacity:0.2" v-if="elem.hovered"></div> -->
                 </div>
 
             </div>
@@ -82,7 +112,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
 
     <script>
-        var conn = new WebSocket('ws://localhost:8080');
+        var conn = new WebSocket('wss://localhost:8080');
         conn.onopen = function (e) {
             console.log("Connection established!");
         };
@@ -98,7 +128,7 @@
                     cruddata: null,
                     gamedata: {
 
-                        gracze: [{ color: 'red' }, { color: 'blue' } ],
+                        gracze: [{ color: 'red' }],
                         activegracz: 0,
                         skuchy: [0, 0],
                         activeindex: 0,
@@ -107,18 +137,40 @@
                         daty: [
                             { opis: 'polacy pod grunwadlem odkrywaja przepis na bimber od krzyzakow', rok: 1410 },
                             { opis: 'wpierdol arabom w Wiedniu', rok: 1683 },
+                            { opis: 'Narodziny Jamesa Cook', rok: 1728 },
+                            { opis: 'Narodziny Katarzyny Wielkiej', rok: 1729 },
+
                             { opis: 'Narodziny Jamesa Watta', rok: 1736 },
-                            { opis: ' august poniatowski za dostep do cipy sprzedaje kraj', rok: 1772 },
-                            { opis: 'Śmierć Jamesa Watta', rok: 1819 },
+                            { opis: 'Narodziny Alessandro Volty', rok: 1745 },
+                            { opis: 'Narodziny Tadeusza Kościuszko', rok: 1746 },
+                            { opis: 'August poniatowski za dostep do cipy sprzedaje kraj', rok: 1772 },
+                            { opis: 'Śmierć Jamesa Cook', rok: 1779 },
+                            { opis: 'Śmierć Katarzyny Wielkiej', rok: 1796 },
+                            { opis: 'Pierwsza lokomotywa Trevithick', rok: 1802 },
+                            { opis: 'Narodziny Napoleona III', rok: 1808 },
+                            { opis: 'Bitwa pod Waterloo', rok: 1815 },
+
+                            { opis: 'Narodziny królowej Wiktorii ', rok: 1819.5 },
+                            { opis: 'Śmierć Jamesa Watta', rok: 1819.8 },
+                            { opis: 'Pierwsza żarówka Warren de la Rue', rok: 1820 },
                             { opis: 'Śmierć Napoleona Bonaparte', rok: 1821 },
+                            { opis: 'Śmierć Alessandro Volty', rok: 1827 },
+                            { opis: 'Lokomotywa Stephensona (rakieta)', rok: 1829 },
+                            { opis: 'Koronacja Napoleona III', rok: 1852 },
+                            { opis: 'Narodziny cesarza Wilhelma ', rok: 1859 },
+                            { opis: 'Śmierć Napoleona III', rok: 1873 },
+                            { opis: 'Narodziny Churchilla ', rok: 1874 },
                             { opis: 'Narodziny Einsteina', rok: 1879 },
+                            { opis: 'Edison patentuje żarówkę', rok: 1880 },
+                            { opis: 'Samochód Carla Benza', rok: 1886 },
                             { opis: 'Śmierć Bismarcka', rok: 1898 },
+                            { opis: 'Śmierć cesarza Wilhelma ', rok: 1941 },
+                            { opis: 'Śmierć królowej Wiktorii ', rok: 1901 },
                             { opis: 'Wynalezienie Penicyliny', rok: 1928 },
                             { opis: 'Śmierć Einsteina', rok: 1955 },
-                            { opis: 'Władysław gomulka bohatersko przepedza żydów z Polski', rok: 1968 },
-                            { opis: 'Wojciech Jaruzelski ratuje ojczyzne przed zydokomuną', rok: 1981 },
-                            { opis: 'Bronisław Komorowski pełni obowiazki prezydenta', rok: 2010 },
-                            { opis: 'ułaskawienie bestii z Piotrkowa', rok: 2014 },
+                            { opis: 'Śmierć Churchilla', rok: 1965 },
+                            // { opis: 'Władysław gomulka bohatersko przepedza żydów z Polski', rok: 1968 },
+                            // { opis: 'Wojciech Jaruzelski ratuje ojczyzne przed zydokomuną', rok: 1981 },
 
                         ],
 
@@ -154,17 +206,18 @@
                         this.gamedata.datystol[i].hovered = false;
                     }
                 },
-                setsingle(){
+                setsingle() {
                     // console.log('fsafdas');
                     this.gamedata.gracze.pop();
                     // this.loademit();
                 },
-                loademit(){
-                  conn.send('load');
+                loademit() {
+                    conn.send('load');
                 },
                 layCard(index) {
-                    if(!this.graczbool){
+                    if (!this.graczbool) {
                         this.setsingle();
+                        this.graczbool = true;
                     }
 
                     if (this.endgame) {
@@ -179,9 +232,9 @@
                         if (this.gamedata.activedata.rok > date1 && this.gamedata.activedata.rok < date2) {
                             this.gamedata.datystol.splice(index + 1, 0, { ...this.gamedata.activedata });
                             this.losuj();
-                            if(this.gamedata.gracze.length ===1){
+                            if (this.gamedata.gracze.length === 1) {
 
-                            }else {
+                            } else {
                                 this.gamedata.activegracz = this.gamedata.gracze.length == this.gamedata.activegracz + 1 ? 0 : this.gamedata.activegracz + 1;
                             }
 
@@ -200,7 +253,7 @@
                         }
                     }
 
-                    if(this.gamedata.gracze.length > 1){
+                    if (this.gamedata.gracze.length > 1) {
                         conn.send('load');
                     }
 
