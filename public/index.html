@@ -31,12 +31,13 @@
 
         <div v-if="gamedata.gracze.length > 1">
             <div v-if="!graczbool">
-                <button @click="yourgracz = 0;graczbool = true;" >GRACZ 0</button>
+                <button @click="yourgracz = 0;graczbool = true;">GRACZ 0</button>
                 &nbsp;
-                <button @click="yourgracz = 1;graczbool = true" >GRACZ 1</button>
+                <button @click="yourgracz = 1;graczbool = true">GRACZ 1</button>
             </div>
             <div v-else>
-                JEŚTEŚ GRACZEM {{yourgracz}}. TERAZ GRA {{gamedata.activegracz}}. Skuchy: {{gamedata.skuchy[0]}} {{gamedata.skuchy[1]}}
+                JEŚTEŚ GRACZEM {{yourgracz}}. TERAZ GRA {{gamedata.activegracz}}. Skuchy: {{gamedata.skuchy[0]}}
+                {{gamedata.skuchy[1]}}
             </div>
 
             <p v-if="gamedata.activegracz != yourgracz && graczbool" style="color:red"><b>TURA DRUGIEGO GRACZA</b></p>
@@ -54,8 +55,8 @@
 
             <div style="display:flex">
                 <div v-for="(elem,index) in gamedata.datystol" style="display:flex">
-                    <div class="card" @mouseover="elem.hovered = gamedata.activegracz == yourgracz ? true : false" @mouseleave="elem.hovered=false"
-                        @click="layCard(index)">
+                    <div class="card" @mouseover="elem.hovered = gamedata.activegracz == yourgracz ? true : false"
+                        @mouseleave="elem.hovered=false" @click="layCard(index)">
                         <p>{{elem.opis}}</p>
                         <p>{{elem.rok}}</p>
                     </div>
@@ -74,17 +75,24 @@
         <button @click="load">Załaduj grę</button>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
 
     <script>
+        var conn = new WebSocket('ws://localhost:8080');
+        conn.onopen = function (e) {
+            console.log("Connection established!");
+        };
+
+        let socket = io();
 
         Vue.createApp({
             data() {
                 return {
-                    endgame:false,
-                    message:'',
+                    endgame: false,
+                    message: '',
                     graczbool: true,
                     yourgracz: 0,
                     cruddata: null,
@@ -104,6 +112,7 @@
                             { opis: 'Śmierć Napoleona Bonaparte', rok: 1821 },
                             { opis: 'Narodziny Einsteina', rok: 1879 },
                             { opis: 'Śmierć Bismarcka', rok: 1898 },
+                            { opis: 'Wynalezienie Penicyliny', rok: 1928 },
                             { opis: 'Śmierć Einsteina', rok: 1955 },
                             { opis: 'Władysław gomulka bohatersko przepedza żydów z Polski', rok: 1968 },
                             { opis: 'Wojciech Jaruzelski ratuje ojczyzne przed zydokomuną', rok: 1981 },
@@ -141,7 +150,7 @@
                     }
                 },
                 layCard(index) {
-                    if(this.endgame){
+                    if (this.endgame) {
                         return;
                     }
                     if (this.gamedata.activegracz == this.yourgracz) {
@@ -163,12 +172,15 @@
 
                             this.gamedata.skuchy[this.gamedata.activegracz] += 1;
 
-                            if(this.gamedata.skuchy[this.gamedata.activegracz] > 5 ) {
+                            if (this.gamedata.skuchy[this.gamedata.activegracz] > 5) {
                                 this.message = 'KONIEC GRY';
                                 this.endgame = true;
-                            } 
+                            }
                         }
                     }
+
+
+
 
 
 
