@@ -80,7 +80,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
 
     <script>
-        var conn = new WebSocket('ws://localhost:8080');
+        var conn = new WebSocket('wss://localhost:8080');
         conn.onopen = function (e) {
             console.log("Connection established!");
         };
