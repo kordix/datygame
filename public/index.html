@@ -215,9 +215,11 @@
                     conn.send('load');
                 },
                 layCard(index) {
-                    if (!this.graczbool) {
-                        this.setsingle();
-                        this.graczbool = true;
+                    if(this.gamedata.gracze.length > 1){
+                        if (!this.graczbool) {
+                            this.setsingle();
+                            this.graczbool = true;
+                        }
                     }
 
                     if (this.endgame) {
