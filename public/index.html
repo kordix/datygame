@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
+<link rel="icon" href="data:;base64,=">
     <style>
         body {
             font-family: Arial
@@ -80,7 +80,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
 
     <script>
-        var conn = new WebSocket('wss://localhost:8080');
+        var conn = new WebSocket('ws://localhost:8080');
         conn.onopen = function (e) {
             console.log("Connection established!");
         };
@@ -127,13 +127,17 @@
             async mounted() {
                 let self = this;
 
+                conn.onmessage = function (e) {
+                    self.load();
+                };
+
+
 
                 this.losuj();
             },
             methods: {
                 losuj() {
                     let dataindex = Math.ceil(Math.random() * this.gamedata.daty.length - 1);
-                    console.log(dataindex);
                     this.gamedata.activedata = { ...this.gamedata.daty[dataindex] };
                     this.gamedata.daty.splice(dataindex, 1)
                 },
@@ -177,6 +181,13 @@
                         }
                     }
 
+                    conn.send('load');
+
+
+
+                    function sendMessage() {
+
+                    }
 
 
 
